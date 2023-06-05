@@ -11,8 +11,8 @@ import (
 
 // Configuration 项目配置
 type Configuration struct {
-	UserName string `yaml:"username"`
-	PassWord string `yaml:"password"`
+	TcSecretID  string `yaml:"tc_secretId"`
+	TcSecretKey string `yaml:"tc_secretKey"`
 }
 
 var config *Configuration
@@ -35,13 +35,13 @@ func LoadConfig() *Configuration {
 		}
 
 		// 如果环境变量有配置，读取环境变量
-		username := os.Getenv("USERNAME")
-		if username != "" {
-			config.UserName = username
+		tc_secret_id := os.Getenv("TC_SERCRET_ID")
+		if tc_secret_id != "" {
+			config.TcSecretID = tc_secret_id
 		}
-		password := os.Getenv("PASSWORD")
-		if password != "" {
-			config.PassWord = password
+		tc_secret_key := os.Getenv("TC_SERCRET_KEY")
+		if tc_secret_key != "" {
+			config.TcSecretKey = tc_secret_key
 		}
 	})
 

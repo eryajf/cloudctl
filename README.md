@@ -1,85 +1,72 @@
 <div align="center">
-<h1>eryajfctl</h1>
+<h1>cloudctl</h1>
 
 [![Auth](https://img.shields.io/badge/Auth-eryajf-ff69b4)](https://github.com/eryajf)
-[![GitHub Pull Requests](https://img.shields.io/github/stars/eryajf/eryajfctl)](https://github.com/eryajf/eryajfctl/stargazers)
-[![HitCount](https://views.whatilearened.today/views/github/eryajf/eryajfctl.svg)](https://github.com/eryajf/eryajfctl)
-[![GitHub license](https://img.shields.io/github/license/eryajf/eryajfctl)](https://github.com/eryajf/eryajfctl/blob/main/LICENSE)
+[![GitHub Pull Requests](https://img.shields.io/github/stars/eryajf/cloudctl)](https://github.com/eryajf/cloudctl/stargazers)
+[![HitCount](https://views.whatilearened.today/views/github/eryajf/cloudctl.svg)](https://github.com/eryajf/cloudctl)
+[![GitHub license](https://img.shields.io/github/license/eryajf/cloudctl)](https://github.com/eryajf/cloudctl/blob/main/LICENSE)
 [![](https://img.shields.io/badge/Awesome-MyStarList-c780fa?logo=Awesome-Lists)](https://github.com/eryajf/awesome-stars-eryajf#readme)
 
-<p> 🌉 基于Cobra库快速开发类似kubectl一样的命令行工具框架 🌉</p>
+<p> 🌉 与云产品的一些交互 🌉</p>
 
 <img src="https://camo.githubusercontent.com/82291b0fe831bfc6781e07fc5090cbd0a8b912bb8b8d4fec0696c881834f81ac/68747470733a2f2f70726f626f742e6d656469612f394575424971676170492e676966" width="800"  height="3">
 
 </div>
 
-运维也可以如此优雅！快用这个框架打造一个专属于你的工具箱吧！
-
-通过这个框架，你可以快速上手，直接构建你想要的运维工具，而不必再考虑配置，框架设计等内容。
+运维也可以如此优雅！
 
 ## 如何使用
 
-先拷贝配置文件:
+先拷贝配置文件，然后正确配置里边的内容：
 
 ```sh
 cp config.example.yml config.yml
 ```
 
-执行如下指令，运行示例参数：
+执行如下指令，查询某日志主题前天单日费用：
 
 ```sh
-$ go run main.go ex getconfig -w "hello, This is eryajfctl"
-通过配置文件获取到的用户名: eryajf
-通过配置文件获取到的密码: 123456
-通过命令行获取到的内容是: hello, This is eryajfctl
+# 你也可以直接在release下载二进制来执行
+$ cloudctl cls getlogcost -l "xxxxxxxxxxxxxxxxxx" -r "ap-shanghai"
+
+前天的花费为: 174元
+日志主题为: xxxxxxxxxxxxxxxxxx
 ```
 
-> 其中ex为一级参数，getconfig为二级参数，大多数场景下，分两个层级就够用了，你可以把一级参数当做归类，比如 jenkins, gitlab，二级参数当做功能参数，再往后的参数则是该二级参数所需要的运行时参数。
+查询某个应用在一个大日志主题中花费的费用。
 
-也可以编译成二进制，然后通过如下方式查看帮助信息：
+```sh
+$ cloudctl cls getprojectcost -b "bot_webhook" -k k8s -l xxxxxxxxxxxxxxxxxxxxxxx -p testeryajf -r ap-shanghai
 
-```
-# 编译
-$ make build
-
-#运行测试
-$ ./eryajfctl ex getconfig -h
-通过命令行获取配置信息
-
-Usage:
-  eryajfctl ex getconfig [flags]
-
-Flags:
-  -h, --help          help for getconfig
-  -w, --word string   测试参数 (default "你好，这是测试")
+> 应用名称：`testeryajf`
+> 应用在主题日志占比： `10%`
+> 应用单月费用预计： `3000元`
+>该主题前天单日的费用为: `1000元`
+该主题的ID为: `xxxxxxxxxxxxxxxxxxxxxxx`
 ```
 
-## 开始开发
+通知到群里的消息大概长这样：
 
-你可以直接参考ex参数的流程，开发新的参数，从而满足实际使用需求。
+![](https://cdn.staticaly.com/gh/eryajf/tu/main/img/image_20230605_184855.png)
 
-如果你的配置文件中有敏感数据，可以考虑结合go-bindata来使用，通过执行：
+> 我们的应用场景是，生产环境中，有两个日志主题，一个采集所有CVM主机应用的日志，一个采集所有部署在tke之中的日志。所以在一个日志主题中，会有许多个应用，每个应用对应了一组服务器。当然在k8s中对应的名字就是deployment的名字。
 
+上边所有的参数都比较容易理解，示例当中也给出了明确的解析。这里单独把project的参数拿出来说一说。传递应用的名字，程序会首先拼接出如下语句，查询应用在整个日志主题中的日志量占比：
+
+- CVM：`* | SELECT ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*)), 2) AS percentage WHERE "__HOSTNAME__" like 'testeryajf%'`
+- K8S: `* | SELECT ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*)), 2) AS percentage WHERE "__TAG__.pod_label_app"  'testeryajf'`
+
+所以你在运行项目之前，应该先确认如上语句，在你的日志主题当中，能够正常拿到该应用在主题中的日志量百分比。这是算出应用一个月成本评估的基础。
+
+如果你有多个项目想要共同关注，则可以参照project_list.example.yml文件，对内容进行配置，运行命令如下：
+
+```sh
+$ cloudctl cls getprojectcost -f project_list.example.yml
 ```
-go-bindata -o=./public/bindata_config.go -pkg=public config.yml
-```
-
-然后更改 [public/config.go](https://github.com/eryajf/eryajfctl/blob/4cd30714062e5b65746bdb5f100f19bfe38ed52e/public/config.go#L28) 中的配置信息读取方式，接着进入开发即可。
-
-如果后续本地的config.yml配置有更新，则再次执行上边的命令，将配置文件注入到 `bindata_config.go` 即可。
-
-这样做的一个好处是，你的二进制放到服务器等地运行的时候，既不需要添加config.yml文件，也能防止文件中的敏感信息暴漏出去。
 
 ## 感谢开源
 
-此框架建立在如下几个优秀的考原项目之上：
 
-- [gopkg.in/yaml.v3 v3.0.1](https://github.com/go-yaml/yaml)
-- [github.com/spf13/cobra v1.2.1](https://github.com/spf13/cobra)
+- [eryajfctl](https://github.com/eryajf/eryajfctl)
 
-## 其他参考
-
-如果你想熟悉了解此框架的详细用法，还可以参考我的如下两篇文章：
-
-- [使用go-bindata将文件编译进二进制](https://wiki.eryajf.net/pages/2bf6c3/)
-- [利用cobra库快速开发类似kubectl一样的命令行工具](https://wiki.eryajf.net/pages/5c4163/)
+如果觉得项目不错，请别忘了一键三连，给个star。

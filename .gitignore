@@ -9,7 +9,8 @@
 .token
 
 logs
-eryajfctl
+cloudctl
+config.yml
 
 # Test binary, built with `go test -c`
 *.test

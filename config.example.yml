@@ -1,2 +1,4 @@
-username: "eryajf"
-password: "123456"
+# 腾讯云账号秘钥ID
+tc_secretId: "put-your-client-id-here"
+# 腾讯云账号秘钥IDKEY
+tc_secretKey: "put-your-client-secret-here"

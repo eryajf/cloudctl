@@ -1,0 +1,14 @@
+bot: "xxxxxxxxxxxxx"
+project_items:
+  -
+    logid: "xxxxxxxxxxxxxxxx"
+    kind: "host"
+    project:
+    - "aa"
+    - "bb"
+  -
+    logid: "xxxxxxxxxxxxxxxx"
+    kind: "k8s"
+    project:
+    - "aa"
+    - "bb"
