@@ -1,4 +1,4 @@
 # 腾讯云账号秘钥ID
-tc_secretId: "put-your-client-id-here"
-# 腾讯云账号秘钥IDKEY
-tc_secretKey: "put-your-client-secret-here"
+tc_secretId: "put_your_secret_id"
+# 腾讯云账号秘钥KEY
+tc_secretKey: "put_your_secret_key"
