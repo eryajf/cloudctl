@@ -64,6 +64,15 @@ $ cloudctl cls getprojectcost -b "bot_webhook" -k k8s -l xxxxxxxxxxxxxxxxxxxxxxx
 $ cloudctl cls getprojectcost -f project_list.example.yml
 ```
 
+你也可以使用docker镜像来运行服务。
+
+```sh
+$ docker run -it -e TC_SERCRET_ID="xxxxx" -e TC_SERCRET_KEY="xxxxxxxxxx" dockerproxy.com/eryajf/cloudctl /app/cloudctl cls getlogcost  -l "222345432454425"
+
+前天的花费为: 1000元
+日志主题为: 222345432454425
+```
+
 ## 感谢开源
 
 
