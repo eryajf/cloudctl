@@ -47,24 +47,24 @@ $ cloudctl cls getprojectcost -b "bot_webhook" -k k8s -l xxxxxxxxxxxxxxxxxxxxxxx
 
 通知到群里的消息大概长这样：
 
-![](https://cdn.staticaly.com/gh/eryajf/tu/main/img/image_20230605_184855.png)
+![](https://cdn.jsdelivr.net/gh/eryajf/tu/img/image_20230605_184855.png)
 
-> 我们的应用场景是，生产环境中，有两个日志主题，一个采集所有CVM主机应用的日志，一个采集所有部署在tke之中的日志。所以在一个日志主题中，会有许多个应用，每个应用对应了一组服务器。当然在k8s中对应的名字就是deployment的名字。
+> 我们的应用场景是，生产环境中，有两个日志主题，一个采集所有 CVM 主机应用的日志，一个采集所有部署在 tke 之中的日志。所以在一个日志主题中，会有许多个应用，每个应用对应了一组服务器。当然在 k8s 中对应的名字就是 deployment 的名字。
 
-上边所有的参数都比较容易理解，示例当中也给出了明确的解析。这里单独把project的参数拿出来说一说。传递应用的名字，程序会首先拼接出如下语句，查询应用在整个日志主题中的日志量占比：
+上边所有的参数都比较容易理解，示例当中也给出了明确的解析。这里单独把 project 的参数拿出来说一说。传递应用的名字，程序会首先拼接出如下语句，查询应用在整个日志主题中的日志量占比：
 
 - CVM：`* | SELECT ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*)), 2) AS percentage WHERE "__HOSTNAME__" like 'testeryajf%'`
 - K8S: `* | SELECT ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*)), 2) AS percentage WHERE "__TAG__.pod_label_app"  'testeryajf'`
 
 所以你在运行项目之前，应该先确认如上语句，在你的日志主题当中，能够正常拿到该应用在主题中的日志量百分比。这是算出应用一个月成本评估的基础。
 
-如果你有多个项目想要共同关注，则可以参照project_list.example.yml文件，对内容进行配置，运行命令如下：
+如果你有多个项目想要共同关注，则可以参照 project_list.example.yml 文件，对内容进行配置，运行命令如下：
 
 ```sh
 $ cloudctl cls getprojectcost -f project_list.example.yml
 ```
 
-你也可以使用docker镜像来运行服务。
+你也可以使用 docker 镜像来运行服务。
 
 ```sh
 $ docker run -it -e TC_SERCRET_ID="xxxxx" -e TC_SERCRET_KEY="xxxxxxxxxx" dockerproxy.com/eryajf/cloudctl /app/cloudctl cls getlogcost  -l "222345432454425"
@@ -75,7 +75,6 @@ $ docker run -it -e TC_SERCRET_ID="xxxxx" -e TC_SERCRET_KEY="xxxxxxxxxx" dockerp
 
 ## 感谢开源
 
-
 - [eryajfctl](https://github.com/eryajf/eryajfctl)
 
-如果觉得项目不错，请别忘了一键三连，给个star。
+如果觉得项目不错，请别忘了一键三连，给个 star。
